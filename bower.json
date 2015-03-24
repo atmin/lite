@@ -1,0 +1,8 @@
+{
+  "name": "lite",
+  "version": "0.0.1",
+  "main": "lite.js",
+  "ignore": [],
+  "dependencies": {},
+  "devDependencies": {}
+}

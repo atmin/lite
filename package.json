@@ -1,0 +1,27 @@
+{
+  "name": "lite",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atmin/litl.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ],
+  "devDependencies": {
+    "browserify": "^4.2.0",
+    "freak": "^0.4.4",
+    "jshint": "^2.5.2",
+    "watchify": "^2.6.0"
+  },
+  "scripts": {
+    "jshint": "jshint src/*.js",
+    "browserify": "browserify --standalone lite src > lite.js",
+    "start": "watchify --standalone src",
+    "build": "npm run jshint && npm run browserify",
+    "test": ""
+  }
+}
