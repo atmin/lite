@@ -20,10 +20,10 @@ module.exports = [
         prop: node.innerHTML,
 
         rule: function(fragment, model, prop) {
-          var textNode = document.createTextNode(jtmpl._get(model, prop) || '');
+          var textNode = document.createTextNode(lite._get(model, prop) || '');
           fragment.appendChild(textNode);
           model.on('change', prop, function() {
-            textNode.data = jtmpl._get(model, prop) || '';
+            textNode.data = lite._get(model, prop) || '';
           });
         }
       };
@@ -91,18 +91,18 @@ module.exports = [
     if (match) {
       return {
 
-        prop: match,
+        prop: match[0],
 
         rule: function(fragment, model, match) {
 
           var anchor = document.createComment('');
           var target;
 
-          function loader() {
+          function change() {
             if (!target) {
               target = anchor.parentNode;
             }
-            jtmpl.loader(
+            lite(
               target,
               match[1] ?
                 // Variable
@@ -114,11 +114,10 @@ module.exports = [
           }
           if (match[1]) {
             // Variable
-            model.on('change', match[1], loader);
+            model.on('change', match[1], change);
           }
           fragment.appendChild(anchor);
-          // Load async
-          setTimeout(loader);
+          change();
         }
       };
     }
@@ -225,7 +224,7 @@ module.exports = [
                 //render.appendChild(func(val.values[i]));
                 childModel = val(i);
                 child = func(childModel);
-                child.__jtmpl__ = childModel;
+                child.__lite__ = childModel;
                 render.appendChild(child);
               }
 
@@ -240,7 +239,7 @@ module.exports = [
               length = render.childNodes.length;
               chunkSize = length;
               anchor.parentNode.insertBefore(render, anchor);
-              anchor.parentNode.__jtmpl__ = model;
+              anchor.parentNode.__lite__ = model;
             }
 
             // Cast to boolean
@@ -331,7 +330,7 @@ module.exports = [
 
 
   /*
-   * Fallback rule, not recognized jtmpl tag
+   * Fallback rule, not recognized lite tag
    */
   function(node) {
     return {

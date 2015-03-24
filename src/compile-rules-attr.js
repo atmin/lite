@@ -21,7 +21,7 @@ module.exports = [
         rule: function(node, attr, model, prop) {
 
           function change() {
-            var val = jtmpl._get(model, prop);
+            var val = lite._get(model, prop);
             if (node[attr] !== val) {
               node[attr] = val || '';
             }
@@ -51,7 +51,7 @@ module.exports = [
    */
   function(node, attr) {
     var match = node.getAttribute(attr).match(RE_DELIMITED_VAR);
-    if (attr === 'jtmpl-selected' && match) {
+    if (attr === 'lite-selected' && match) {
 
       return {
 
@@ -122,7 +122,7 @@ module.exports = [
    */
   function(node, attr) {
     var match = node.getAttribute(attr).match(RE_DELIMITED_VAR);
-    if (attr === 'jtmpl-checked' && match) {
+    if (attr === 'lite-checked' && match) {
 
       return {
 
@@ -200,7 +200,7 @@ module.exports = [
         rule: function(node, attr, model, prop) {
 
           function change() {
-            var val = jtmpl._get(model, prop);
+            var val = lite._get(model, prop);
             return val ?
               node.setAttribute(attr, val) :
               node.removeAttribute(attr);
@@ -218,17 +218,17 @@ module.exports = [
 
   /**
    * Fallback rule, process via @see utemplate
-   * Strip jtmpl- prefix
+   * Strip lite- prefix
    */
   function(node, attr) {
     return {
       prop: node.getAttribute(attr),
       rule: function(node, attr, model, prop) {
-        var attrName = attr.replace('jtmpl-', '');
+        var attrName = attr.replace('lite-', '');
         function change() {
           node.setAttribute(
             attrName,
-            jtmpl.utemplate(prop, model, change)
+            lite.utemplate(prop, model, change)
           );
         }
         change();

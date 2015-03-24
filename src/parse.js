@@ -15,7 +15,7 @@ function parse(template) {
     // replace {{{tag}}} with {{&tag}}
     template = template.replace(/\{\{\{([\S\s]*?)\}\}\}/g, '{{&$1}}');
 
-    // 1. wrap each non-attribute tag in <script type="text/jtmpl-tag">
+    // 1. wrap each non-attribute tag in <script type="text/lite-tag">
     // 2. remove Mustache comments
     // TODO: handle tags in HTML comments
     template = template.replace(
@@ -36,29 +36,25 @@ function parse(template) {
             match :
           insideScript ?
             match :
-            '<script type="text/jtmpl-tag">' + match1.trim() + '\x3C/script>';
+            '<script type="text/lite-tag">' + match1.trim() + '\x3C/script>';
       }
     );
-    // prefix 'selected' and 'checked' attributes with 'jtmpl-'
+    // prefix 'selected' and 'checked' attributes with 'lite-'
     // (to avoid "special" processing, oh IE8)
     template = template.replace(
       /(<(?:option|OPTION)[^>]*?)(?:selected|SELECTED)=/g,
-      '$1jtmpl-selected=');
+      '$1lite-selected=');
 
     template = template.replace(
       /(<(?:input|INPUT)[^>]*?)(?:checked|CHECKED)=/g,
-      '$1jtmpl-checked=');
+      '$1lite-checked=');
 
     return template;
   }
 
   template = preprocess(template);
-  iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  document.body.appendChild(iframe);
-  iframe.contentDocument.writeln('<!doctype html>\n<html><body>' + template + '</body></html>');
-  body = iframe.contentDocument.body;
-  document.body.removeChild(iframe);
+  body = document.createElement('body');
+  body.innerHTML = template;
 
   return body;
 }

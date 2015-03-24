@@ -2,123 +2,73 @@
  * Main function
  */
 /* jshint evil: true */
-function jtmpl() {
+function lite() {
   var args = [].slice.call(arguments);
-  var target, t, template, model;
 
-  // jtmpl('HTTP_METHOD', url[, parameters[, callback[, options]]])?
-  if (['GET', 'POST'].indexOf(args[0]) > -1) {
-    return require('./xhr').apply(null, args);
+  function hashcode(s) {
+    var hash = 0, i, chr, len;
+    if (s.length === 0) return hash;
+    for (i = 0, len = s.length; i < len; i++) {
+      chr = s.charCodeAt(i);
+      hash = ((hash << 5) - hash) + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
   }
 
-  // jtmpl(object)?
-  else if (args.length === 1 && typeof args[0] === 'object') {
+  // lite(object)?
+  if (args.length === 1 && typeof args[0] === 'object') {
     // return Freak instance
     return require('freak')(args[0]);
   }
 
-  // jtmpl(target)?
+  // lite(template)?
   else if (args.length === 1 && typeof args[0] === 'string') {
-    // return model
-    return document.querySelector(args[0]).__jtmpl__;
+    var template = lite.parse(args[0]);
+    return lite.compile(template, 'lite-' + hashcode(template));
   }
 
-  // jtmpl(target, template, model[, options])?
+  // lite(target, template, model)?
   else if (
-    ( args[0] && args[0].nodeType ||
-      (typeof args[0] === 'string')
-    ) &&
-
-    ( (args[1] && typeof args[1].appendChild === 'function') ||
-      (typeof args[1] === 'string')
-    ) &&
-
-    args[2] !== undefined
-
+    (args[0] && args[0].nodeType) &&
+    (typeof args[1] === 'string') &&
+    (typeof args[2] === 'function')
   ) {
-
-    target = args[0] && args[0].nodeType  ?
-      args[0] :
-      document.querySelector(args[0]);
-
-    template = args[1].match(jtmpl.RE_NODE_ID) ?
-      document.querySelector(args[1]).innerHTML :
-      args[1];
-
-    model =
-      typeof args[2] === 'function' ?
-        // already wrapped
-        args[2] :
-        // otherwise wrap
-        jtmpl(
-          typeof args[2] === 'object' ?
-            // object
-            args[2] :
-
-            typeof args[2] === 'string' && args[2].match(jtmpl.RE_NODE_ID) ?
-              // src, load it
-              require('./loader')
-                (document.querySelector(args[2]).innerHTML) :
-
-              // simple value, box it
-              {'.': args[2]}
-        );
-
-    if (target.nodeName === 'SCRIPT') {
-      t = document.createElement('div');
-      t.id = target.id;
-      target.parentNode.replaceChild(t, target);
-      target = t;
-    }
-
-    // Associate target and model
-    target.__jtmpl__ = model;
-
     // Empty target
-    target.innerHTML = '';
+    args[0].innerHTML = '';
 
     // Assign compiled template
-    //target.appendChild(require('./compiler')(template, model, args[3]));
-    target.appendChild(
-      eval(
-        jtmpl.compile(
-          jtmpl.parse(template),
-          target.getAttribute('data-jtmpl')
-        ) + '(model)'
-      )
+    args[0].appendChild(
+      eval(lite(args[1]) + '(args[2])')
+    );
+
+    // Store model reference
+    args[0].__lite__ = args[2];
+  }
+
+  else {
+    console.error('lite called with invalid parameters');
+    console.log('Usage:\n',
+      'var target = document.getElementById("target");\n',
+      'var template = document.getElementById("template").innerHTML;\n',
+      'var model = lite(object);\n',
+      'lite(target, template, model);'
     );
   }
 }
-
-
-
-/*
- * On page ready, process jtmpl targets
- */
-
-window.addEventListener('DOMContentLoaded', function() {
-  var loader = require('./loader');
-  var targets = document.querySelectorAll('[data-jtmpl]');
-
-  for (var i = 0, len = targets.length; i < len; i++) {
-    loader(targets[i], targets[i].getAttribute('data-jtmpl'));
-  }
-});
-
 
 /*
  * Export stuff
  *
  * TODO: refactorme
  */
-jtmpl.RE_NODE_ID = /^#[\w\.\-]+$/;
-jtmpl.RE_ENDS_WITH_NODE_ID = /.+(#[\w\.\-]+)$/;
+lite.RE_NODE_ID = /^#[\w\.\-]+$/;
+lite.RE_ENDS_WITH_NODE_ID = /.+(#[\w\.\-]+)$/;
 
-jtmpl.parse = require('./parse');
-jtmpl.compile = require('./compile');
-jtmpl.loader = require('./loader');
-jtmpl.utemplate = require('./utemplate');
-jtmpl._get = function(model, prop) {
+lite.parse = require('./parse');
+lite.compile = require('./compile');
+lite.utemplate = require('./utemplate');
+lite._get = function(model, prop) {
   var val = model(prop);
   return (typeof val === 'function') ?
     JSON.stringify(val.values) :
@@ -127,19 +77,7 @@ jtmpl._get = function(model, prop) {
 
 
 /*
- * Polyfills
- */
-require('./polyfills/matches');
-
-
-/*
- * Plugins
- */
-jtmpl.plugins = require('./plugins');
-
-
-/*
  * Export
  */
-module.exports = jtmpl;
-if (typeof window !== 'undefined') window.jtmpl = jtmpl;
+module.exports = lite;
+if (typeof window !== 'undefined') window.lite = lite;

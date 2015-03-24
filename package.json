@@ -1,5 +1,6 @@
 {
   "name": "lite",
+  "description": "Live Templates",
   "version": "0.0.1",
   "repository": {
     "type": "git",
@@ -15,12 +16,14 @@
     "browserify": "^4.2.0",
     "freak": "^0.4.4",
     "jshint": "^2.5.2",
+    "simple-server": "^1.0.1",
     "watchify": "^2.6.0"
   },
   "scripts": {
     "jshint": "jshint src/*.js",
     "browserify": "browserify --standalone lite src > lite.js",
-    "start": "watchify --standalone src",
+    "watchify": "watchify --standalone lite src -o lite.js -dv",
+    "start": "npm run watchify & simple-server public 8000",
     "build": "npm run jshint && npm run browserify",
     "test": ""
   }

@@ -20,7 +20,7 @@ function utemplate(template, model, onChange) {
       /\{\{#([\w\.\-]+)\}\}(.+?)\{\{\/([\w\.\-]*?)\}\}/g,
       function(match, openTag, body, closeTag, pos) {
         if (closeTag !== '' && closeTag !== openTag) {
-          throw 'jtmpl: Unclosed ' + openTag;
+          throw 'lite: Unclosed ' + openTag;
         }
         if (typeof onChange === 'function') {
           model.on('change', openTag, onChange);
@@ -52,7 +52,7 @@ function utemplate(template, model, onChange) {
       /\{\{\^([\w\.\-]+)\}\}(.+?)\{\{\/([\w\.\-]*?)\}\}/g,
       function(match, openTag, body, closeTag, pos) {
         if (closeTag !== '' && closeTag !== openTag) {
-          throw 'jtmpl: Unclosed ' + openTag;
+          throw 'lite: Unclosed ' + openTag;
         }
         if (typeof onChange === 'function') {
           model.on('change', openTag, onChange);

@@ -30,8 +30,8 @@ function compile(template, sourceURL, depth) {
   func += 'model = typeof model === "function" ?' +
     'model : ' +
     'typeof model === "object" ?' +
-      'jtmpl(model) :' +
-      'jtmpl({".": model});\n\n';
+      'lite(model) :' +
+      'lite({".": model});\n\n';
 
   // Iterate childNodes
   for (var i = 0, childNodes = template.childNodes, len = childNodes.length, node;
@@ -44,8 +44,8 @@ function compile(template, sourceURL, depth) {
       // Element node
       case 1:
 
-        // jtmpl tag?
-        if (node.nodeName === 'SCRIPT' && node.type === 'text/jtmpl-tag') {
+        // lite tag?
+        if (node.nodeName === 'SCRIPT' && node.type === 'text/lite-tag') {
 
           for (ri = 0, rules = require('./compile-rules-node'), rlen = rules.length;
               ri < rlen; ri++) {
@@ -67,7 +67,7 @@ function compile(template, sourceURL, depth) {
                 }
 
                 if (i === len) {
-                  throw 'jtmpl: Unclosed ' + match.block;
+                  throw 'lite: Unclosed ' + match.block;
                 }
                 else {
                   func += '(' + match.rule.toString() + ')' +
