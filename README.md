@@ -5,14 +5,14 @@
 
 ```bash
 # Install via Bower
-bower install lite
+bower install lite.js
 ```
 
 or
 
 ```bash
 # Install via NPM
-npm install lite
+npm install lite.js
 ```
 
 or
