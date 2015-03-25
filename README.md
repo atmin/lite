@@ -19,7 +19,7 @@ or
 
 ```html
 <!-- Use it via unofficial CDN -->
-<script src="https://cdn.rawgit.com/atmin/lite/v0.0.1/lite.js"></script>
+<script src="https://cdn.rawgit.com/atmin/lite/v0.0.2/lite.js"></script>
 ```
 
 ## Hello, lite

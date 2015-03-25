@@ -91,7 +91,7 @@ module.exports = [
     if (match) {
       return {
 
-        prop: match[0],
+        prop: match,
 
         rule: function(fragment, model, match) {
 
@@ -111,13 +111,14 @@ module.exports = [
                 match[2] || match[3],
               model
             );
+            //debugger;
           }
           if (match[1]) {
             // Variable
             model.on('change', match[1], change);
           }
           fragment.appendChild(anchor);
-          change();
+          setTimeout(change);
         }
       };
     }

@@ -3,6 +3,7 @@
  */
 /* jshint evil: true */
 function lite() {
+  var RE_NODE_ID = /^#[\w\.\-]+$/;
   var args = [].slice.call(arguments);
 
   function hashcode(s) {
@@ -22,6 +23,16 @@ function lite() {
     return require('freak')(args[0]);
   }
 
+  // lite('#target')?
+  else if (args.length === 1 && typeof args[0] === 'string' && args[0].match(RE_NODE_ID)) {
+    return document.querySelector(args[0]).__lite__;
+  }
+
+  // lite(DOMElement)?
+  else if (args.length === 1 && args[0].nodeType) {
+    return args[0].__lite__;
+  }
+
   // lite(template)?
   else if (args.length === 1 && typeof args[0] === 'string') {
     var template = lite.parse(args[0]);
@@ -39,7 +50,13 @@ function lite() {
 
     // Assign compiled template
     args[0].appendChild(
-      eval(lite(args[1]) + '(args[2])')
+      eval(
+        lite(
+          args[1].match(RE_NODE_ID) ?
+            document.querySelector(args[1]).innerHTML :
+            args[1]
+        ) + '(args[2])'
+      )
     );
 
     // Store model reference
@@ -47,7 +64,8 @@ function lite() {
   }
 
   else {
-    console.error('lite called with invalid parameters');
+    console.error('lite called with invalid parameters:', args);
+    console.log(new Error().stack);
     console.log('Usage:\n',
       'var target = document.getElementById("target");\n',
       'var template = document.getElementById("template").innerHTML;\n',
@@ -60,10 +78,7 @@ function lite() {
 /*
  * Export stuff
  *
- * TODO: refactorme
  */
-lite.RE_NODE_ID = /^#[\w\.\-]+$/;
-lite.RE_ENDS_WITH_NODE_ID = /.+(#[\w\.\-]+)$/;
 
 lite.parse = require('./parse');
 lite.compile = require('./compile');

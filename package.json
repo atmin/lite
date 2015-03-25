@@ -1,7 +1,7 @@
 {
   "name": "lite.js",
   "description": "Live Templates",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/atmin/litl.git"
